@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace FindGCD.Tests
@@ -14,8 +10,8 @@ namespace FindGCD.Tests
         public void FindGcd()
         {
             TimeSpan time;
-            int result = GCD.FindGcd(5, -25, out time);
-            Assert.AreEqual(5,result);
+            int result = GCD.FindGcdEuclid(5, -25, out time);
+            Assert.AreEqual(5, result);
             Assert.That(time, Is.GreaterThan(TimeSpan.Zero));
         }
 
@@ -23,7 +19,7 @@ namespace FindGCD.Tests
         public void FindGcd_WithManyParams()
         {
             TimeSpan time;
-            int result = GCD.FindGcd(out time, -5, 25,15,45,85,125);
+            int result = GCD.FindGcdEuclid(out time, -5, 25, 15, 45, 85, 125);
             Assert.AreEqual(5, result);
             Assert.That(time, Is.GreaterThan(TimeSpan.Zero));
         }
@@ -45,6 +41,5 @@ namespace FindGCD.Tests
             Assert.AreEqual(5, result);
             Assert.That(time, Is.GreaterThan(TimeSpan.Zero));
         }
-
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FindGCD
 {
@@ -12,29 +9,45 @@ namespace FindGCD
         /// <summary>
         /// Return GCD and the execution time, using Euclid's algorithm for 2 numbers
         /// </summary>
-        public static int FindGcd(int number1, int number2, out TimeSpan time)
-        {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
+        public static int FindGcdEuclid(int number1, int number2, out TimeSpan time) =>
+            FindGcdWithTime(() => FindGcdEuclid(number1, number2), out time);
 
-            int result = FindGcd(number1, number2);
+        /// <summary>
+        /// Return GCD and the execution time, using Stein's algorithm for 2 numbers
+        /// </summary>
+        public static int FindGcdStein(int number1, int number2, out TimeSpan time) =>
+            FindGcdWithTime(() => FindGcdStein(number1, number2), out time);
 
-            stopWatch.Stop();
-            time = stopWatch.Elapsed;
-
-            return result;
-        }
+        /// <summary>
+        /// Return GCD and the execution time, using Stein's algorithm for 3 numbers
+        /// </summary>
+        public static int FindGcdStein(int number1, int number2, int number3, out TimeSpan time) =>
+            FindGcdWithTime(() => FindGcdStein(FindGcdStein(number1, number2), number3), out time);
 
         /// <summary>
         /// Return GCD and the execution time, using Euclid's algorithm for 3 numbers
         /// </summary>
-        public static int FindGcd(int number1, int number2, int number3, out TimeSpan time)
+        public static int FindGcdEuclid(int number1, int number2, int number3, out TimeSpan time) =>
+            FindGcdWithTime(() => FindGcdEuclid(FindGcdEuclid(number1, number2), number3), out time);
+
+        /// <summary>
+        /// Return GCD and the execution time, using Stein's algorithm for any count of numbers
+        /// </summary>
+        public static int FindGcdStein(out TimeSpan time, params int[] numbers) =>
+            FindGcdWithTime(() => FindGcdForManyNumbers(FindGcdStein, numbers), out time);
+
+        /// <summary>
+        /// Return GCD and the execution time, using Euclid's algorithm for any count of numbers
+        /// </summary>
+        public static int FindGcdEuclid(out TimeSpan time, params int[] numbers) =>
+            FindGcdWithTime(() => FindGcdForManyNumbers(FindGcdEuclid, numbers), out time);
+
+        private static int FindGcdWithTime(Func<int> findGcd, out TimeSpan time)
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            int number = FindGcd(number1, number2);
-            int result = FindGcd(number, number3);
+            int result = findGcd();
 
             stopWatch.Stop();
             time = stopWatch.Elapsed;
@@ -42,25 +55,18 @@ namespace FindGCD
             return result;
         }
 
-        /// <summary>
-        /// Return GCD and the execution time, using Euclid's algorithm for any count of numbers
-        /// </summary>
-        public static int FindGcd(out TimeSpan time, params int[] numbers)
+        private static int FindGcdForManyNumbers(Func<int, int, int> func, int[] numbers)
         {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            Stack<int> stack = new Stack<int>(numbers);
-
-            while (stack.Count > 1)
+            if (numbers.Length < 2)
             {
-                stack.Push(FindGcd(stack.Pop(), stack.Pop()));
+                throw new ArgumentException("The array must contains at least two elements");
             }
 
-            int result = stack.Pop();
-
-            stopWatch.Stop();
-            time = stopWatch.Elapsed;
+            int result = numbers[0];
+            for (int i = 1; i < numbers.Length - 1; i++)
+            {
+                result = func(numbers[i], result);
+            }
 
             return result;
         }
@@ -68,7 +74,7 @@ namespace FindGCD
         /// <summary>
         /// Return GCD, using Euclid's algorithm for 2 numbers
         /// </summary>
-        private static int FindGcd(int number1, int number2)
+        private static int FindGcdEuclid(int number1, int number2)
         {
             if (number1 == 0)
             {
@@ -101,64 +107,8 @@ namespace FindGCD
                     number2 = number2 - number1;
                 }
             }
+
             return number1;
-        }
-
-        /// <summary>
-        /// Return GCD and the execution time, using Stein's algorithm for 2 numbers
-        /// </summary>
-        public static int FindGcdStein(int number1, int number2, out TimeSpan time)
-        {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            int result = FindGcdStein(number1, number2);
-
-            stopWatch.Stop();
-            time = stopWatch.Elapsed;
-
-            return result;
-
-        }
-
-        /// <summary>
-        /// Return GCD and the execution time, using Stein's algorithm for 3 numbers
-        /// </summary>
-        public static int FindGcdStein(int number1, int number2, int number3, out TimeSpan time)
-        {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            int number = FindGcdStein(number1, number2);
-            int result = FindGcdStein(number, number3);
-
-            stopWatch.Stop();
-            time = stopWatch.Elapsed;
-
-            return result;
-        }
-
-        /// <summary>
-        /// Return GCD and the execution time, using Stein's algorithm for any count of numbers
-        /// </summary>
-        public static int FindGcdStein(out TimeSpan time, params int[] numbers)
-        {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            Stack<int> stack = new Stack<int>(numbers);
-
-            while (stack.Count > 1)
-            {
-                stack.Push(FindGcdStein(stack.Pop(), stack.Pop()));
-            }
-
-            int result = stack.Pop();
-
-            stopWatch.Stop();
-            time = stopWatch.Elapsed;
-
-            return result;
         }
 
         /// <summary>
@@ -214,11 +164,10 @@ namespace FindGCD
                 }
 
                 number2 = number2 - number1;
-
-            } while (number2 != 0);
+            }
+            while (number2 != 0);
 
             return number1 << shift;
         }
-
     }
 }

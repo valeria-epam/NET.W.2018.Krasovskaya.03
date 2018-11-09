@@ -25,6 +25,10 @@ namespace IEEE754
             return ConvertToString(bits);
         }
 
+        /// <summary>
+        /// Converts <paramref name="bits"/> to string.
+        /// </summary>
+        /// <param name="bits">The number which wil be converted to string in binary form.</param>
         private static string ConvertToString(ulong bits)
         {
             char[] chars = new char[64];

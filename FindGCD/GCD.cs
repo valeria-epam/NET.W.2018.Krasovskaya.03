@@ -42,6 +42,11 @@ namespace FindGCD
         public static int FindGcdEuclid(out TimeSpan time, params int[] numbers) =>
             FindGcdWithTime(() => FindGcdForManyNumbers(FindGcdEuclid, numbers), out time);
 
+        /// <summary>
+        /// Finds the GCD with time.
+        /// </summary>
+        /// <param name="findGcd">Delegate to find GCD.</param>
+        /// <param name="time">Returns time, needed to find GCD.</param>
         private static int FindGcdWithTime(Func<int> findGcd, out TimeSpan time)
         {
             Stopwatch stopWatch = new Stopwatch();
@@ -55,6 +60,12 @@ namespace FindGCD
             return result;
         }
 
+        /// <summary>
+        /// Finds the GCD for many numbers.
+        /// </summary>
+        /// <param name="func">The function to find GCD.</param>
+        /// <param name="numbers">The numbers for find GCD.</param>
+        /// <exception cref="ArgumentException">The array must contains at least two elements</exception>
         private static int FindGcdForManyNumbers(Func<int, int, int> func, int[] numbers)
         {
             if (numbers.Length < 2)
